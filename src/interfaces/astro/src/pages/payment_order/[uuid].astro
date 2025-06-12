@@ -1,0 +1,11 @@
+---
+export const prerender = false;
+import PaymentPage from '../../components/PaymentPage';
+
+const { uuid } = Astro.params;
+
+const res = await fetch(`http://localhost:4321/api/payment_order/${uuid}`);
+const data = await res.json();
+---
+
+<PaymentPage order={data} /> 
