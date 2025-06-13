@@ -1,8 +1,8 @@
-import { PaymentOrderController } from "../../../../../../core/controllers/PaymentOrderController";
-import { PaymentOrderService } from "../../../../../../core/services/PaymentOrderService";
-import { PrismaPaymentOrderRepository } from "../../../../../../core/infrastructure/PrismaPaymentOrderRepository";
-import { PrismaPaymentProviderRepository } from "../../../../../../core/infrastructure/PrismaPaymentProviderRepository";
-import { GetProvidersByCountryService } from "../../../../../../core/services/PaymentProviderService";
+import { PaymentOrderController } from "../../../../../core/controllers/PaymentOrderController";
+import { PaymentOrderService } from "../../../../../core/services/PaymentOrderService";
+import { PrismaPaymentOrderRepository } from "../../../../../core/infrastructure/PrismaPaymentOrderRepository";
+import { PrismaPaymentProviderRepository } from "../../../../../core/infrastructure/PrismaPaymentProviderRepository";
+import { GetProvidersByCountryService } from "../../../../../core/services/PaymentProviderService";
 
 export const prerender = false;
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PaymentProcessForm } from "./PaymentProcessForm";
 import type { PaymentProcessFormData } from "../../types/paymentProcess";
-import type { PaymentOrder } from "../../../../../core/entities/PaymentOrderEntity";
+import type { PaymentOrder } from "../../../../core/entities/PaymentOrderEntity";
 import { Alert } from "../ui/Alert";
 import {
   fetchPaymentOrder,

@@ -1,5 +1,5 @@
 import type { PaymentProcessFormProps } from "../../types/paymentProcess";
-import type { PaymentProvider } from "../../../../../core/entities/PaymentProviderEntity";
+import type { PaymentProvider } from "../../../../core/entities/PaymentProviderEntity";
 import { Button } from "../ui/Button";
 import { usePaymentProcessForm } from "../hooks/usePaymentProcessForm";
 

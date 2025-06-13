@@ -1,7 +1,7 @@
 // API/network logic for payment orders
 
 import type { PaymentOrderFormData } from "../types/paymentsOrder";
-import type { PaymentOrder } from "../../../../core/entities/PaymentOrderEntity";
+import type { PaymentOrder } from "../../../core/entities/PaymentOrderEntity";
 
 export async function createPaymentOrder(data: PaymentOrderFormData) {
   const response = await fetch(`/api/payment_order/`, {
