@@ -6,16 +6,20 @@
     "dev": "cd src/astro && npm run dev",
     "build": "cd src/astro && npm run build",
     "preview": "cd src/astro && npm run preview",
-    "test": "cd src/astro && npm run test",
-    "test:watch": "cd src/astro && npm run test:watch",
-    "test:coverage": "cd src/astro && npm run test:coverage",
+    "test": "npm run test:core && cd src/astro && npm run test",
+    "test:core": "jest",
+    "test:watch": "npm run test:core && cd src/astro && npm run test:watch",
+    "test:coverage": "npm run test:core && cd src/astro && npm run test:coverage",
     "lint": "cd src/astro && npm run lint",
     "format": "cd src/astro && npm run format"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.11.24",
     "@types/uuid": "^9.0.8",
+    "jest": "^30.0.0",
     "prisma": "^5.10.2",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.3.3"
   },
   "dependencies": {

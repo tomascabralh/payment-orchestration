@@ -2,8 +2,7 @@ import { PaymentOrder } from "../entities/PaymentOrderEntity";
 import { PaymentOrderRepository } from "../repositories/PaymentOrderRepository";
 import { GetProvidersByCountryService } from "./PaymentProviderService";
 
-import { SuccessProvider } from "../../mocks/SuccessProvider";
-import { FailProvider } from "../../mocks/FailProvider";
+import { processWithProvider } from "./PaymentProcessService";
 
 export class PaymentOrderService {
   constructor(
@@ -36,11 +35,6 @@ export class PaymentOrderService {
   }
 
   async processPaymentOrder(providerCode: string) {
-    // GlitchPay always fails
-    if (providerCode.startsWith("glitchpay")) {
-      return await FailProvider();
-    }
-
-    return await SuccessProvider();
+    return await processWithProvider(providerCode);
   }
 }
