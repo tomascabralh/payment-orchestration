@@ -1,11 +1,15 @@
 ---
 export const prerender = false;
-import PaymentPage from '../../components/PaymentPage';
+import { PaymentProcessContainer } from "../../components/paymentProcess/PaymentProcessContainer";
+import Layout from "../../layouts/Layout.astro";
+import "../../styles/global.css";
 
 const { uuid } = Astro.params;
 
-const res = await fetch(`http://localhost:4321/api/payment_order/${uuid}`);
-const data = await res.json();
 ---
 
-<PaymentPage order={data} /> 
+<Layout title="Payment Order">    
+  <main class="max-w-2xl mx-auto p-6">
+    <PaymentProcessContainer client:load orderUuid={uuid!} />
+  </main>
+</Layout>

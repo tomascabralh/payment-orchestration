@@ -1,0 +1,132 @@
+import React, { useState } from "react";
+import type {
+  PaymentProcessFormProps,
+  PaymentProcessFormData,
+} from "../../types/paymentProcess";
+import type { PaymentProvider } from "../../../../../domain/payment_provider/PaymentProviderEntity";
+
+export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
+  onSubmit,
+  order,
+  isLoading = false,
+}) => {
+  const [form, setForm] = useState<PaymentProcessFormData>({
+    fullName: "",
+    documentType: "dni",
+    documentNumber: "",
+    email: "",
+    provider: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(form);
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-2">{order.description}</h1>
+        <p className="text-gray-600 mb-1">
+          Monto:{" "}
+          <span className="font-mono font-semibold">${order.amount}</span>
+        </p>
+        <p className="text-gray-600">Descripción: {order.description}</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-gray-700 mb-2">Proveedor de pago</label>
+          <select
+            name="provider"
+            value={form.provider}
+            onChange={handleChange}
+            required
+            disabled={isLoading}
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Seleccione un proveedor</option>
+            {order.providers.map((prov: PaymentProvider) => (
+              <option key={prov.code} value={prov.code}>
+                {prov.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 mb-2">Nombre completo</label>
+          <input
+            name="fullName"
+            value={form.fullName}
+            onChange={handleChange}
+            required
+            disabled={isLoading}
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Nombre completo"
+          />
+        </div>
+
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <label className="block text-gray-700 mb-2">
+              Tipo de documento
+            </label>
+            <select
+              name="documentType"
+              value={form.documentType}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="dni">DNI</option>
+              <option value="passport">Pasaporte</option>
+              <option value="foreign_id">Cédula Extranjera</option>
+            </select>
+          </div>
+          <div className="flex-1">
+            <label className="block text-gray-700 mb-2">Número</label>
+            <input
+              name="documentNumber"
+              value={form.documentNumber}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Número"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-gray-700 mb-2">Email</label>
+          <input
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            disabled={isLoading}
+            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="correo@ejemplo.com"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Procesando..." : "Pagar"}
+        </button>
+      </form>
+    </div>
+  );
+};

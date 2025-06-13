@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { PaymentOrder } from "../domain/paymentOrder/PaymentOrder";
-import { PaymentOrderRepository } from "../domain/paymentOrder/PaymentOrderRepository";
+import type { PaymentOrder } from "../domain/payment_order/PaymentOrderEntity";
+import { PaymentOrderRepository } from "../domain/payment_order/PaymentOrderRepository";
 
 const prisma = new PrismaClient();
 
@@ -8,14 +8,20 @@ export class PrismaPaymentOrderRepository implements PaymentOrderRepository {
   async findById(uuid: string): Promise<PaymentOrder | null> {
     const order = await prisma.paymentOrder.findUnique({ where: { uuid } });
     if (!order) return null;
-    return new PaymentOrder(
-      order.uuid,
-      order.amount,
-      order.description,
-      order.countryIsoCode,
-      order.createdAt,
-      order.paymentUrl
-    );
+    return {
+      uuid: order.uuid,
+      amount: order.amount,
+      description: order.description,
+      countryIsoCode: order.countryIsoCode,
+      createdAt: order.createdAt,
+      paymentUrl: order.paymentUrl,
+      providers:
+        order.providers &&
+        typeof order.providers === "string" &&
+        order.providers.length > 0
+          ? JSON.parse(order.providers as string)
+          : [],
+    };
   }
 
   async create(order: PaymentOrder): Promise<PaymentOrder> {
@@ -27,15 +33,22 @@ export class PrismaPaymentOrderRepository implements PaymentOrderRepository {
         countryIsoCode: order.countryIsoCode,
         paymentUrl: order.paymentUrl,
         createdAt: order.createdAt,
+        providers: JSON.stringify(order.providers),
       },
     });
-    return new PaymentOrder(
-      created.uuid,
-      created.amount,
-      created.description,
-      created.countryIsoCode,
-      created.createdAt,
-      created.paymentUrl
-    );
+    return {
+      uuid: created.uuid,
+      amount: created.amount,
+      description: created.description,
+      countryIsoCode: created.countryIsoCode,
+      createdAt: created.createdAt,
+      paymentUrl: created.paymentUrl,
+      providers:
+        created.providers &&
+        typeof created.providers === "string" &&
+        created.providers.length > 0
+          ? JSON.parse(created.providers as string)
+          : [],
+    };
   }
 }
