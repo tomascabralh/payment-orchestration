@@ -1,29 +1,14 @@
-import React from "react";
-import type {
-  PaymentProcessFormProps,
-  PaymentProcessFormData,
-} from "../../types/paymentProcess";
-import type { PaymentProvider } from "../../../../../domain/payment_provider/PaymentProviderEntity";
+import type { PaymentProcessFormProps } from "../../types/paymentProcess";
+import type { PaymentProvider } from "../../../../../core/entities/PaymentProviderEntity";
 import { Button } from "../ui/Button";
+import { usePaymentProcessForm } from "../hooks/usePaymentProcessForm";
 
 export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   onSubmit,
   order,
   isLoading = false,
 }) => {
-  const [form, setForm] = React.useState<PaymentProcessFormData>({
-    fullName: "",
-    documentType: "dni",
-    documentNumber: "",
-    email: "",
-    provider: "",
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const { form, handleChange, setForm, resetForm } = usePaymentProcessForm();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

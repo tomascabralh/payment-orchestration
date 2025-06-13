@@ -1,6 +1,9 @@
-import { PaymentOrder } from "../../domain/payment_order/PaymentOrderEntity";
-import { PaymentOrderRepository } from "../../domain/payment_order/PaymentOrderRepository";
-import { GetProvidersByCountryService } from "../paymentProvider/GetProvidersByCountryService";
+import { PaymentOrder } from "../entities/PaymentOrderEntity";
+import { PaymentOrderRepository } from "../repositories/PaymentOrderRepository";
+import { GetProvidersByCountryService } from "./PaymentProviderService";
+
+import { SuccessProvider } from "../../mocks/SuccessProvider";
+import { FailProvider } from "../../mocks/FailProvider";
 
 export class PaymentOrderService {
   constructor(
@@ -30,5 +33,14 @@ export class PaymentOrderService {
       providers,
     };
     return this.repository.create(orderWithProviders);
+  }
+
+  async processPaymentOrder(providerCode: string) {
+    // GlitchPay always fails
+    if (providerCode.startsWith("glitchpay")) {
+      return await FailProvider();
+    }
+
+    return await SuccessProvider();
   }
 }

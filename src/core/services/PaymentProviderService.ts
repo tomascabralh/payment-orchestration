@@ -1,4 +1,4 @@
-import { PaymentProviderRepository } from "@/domain/payment_provider/PaymentProviderRepository";
+import { PaymentProviderRepository } from "../repositories/PaymentProviderRepository";
 
 export class GetProvidersByCountryService {
   constructor(private readonly repo: PaymentProviderRepository) {}

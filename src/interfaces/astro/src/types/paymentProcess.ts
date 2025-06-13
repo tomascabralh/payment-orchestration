@@ -1,4 +1,4 @@
-import type { PaymentOrder } from "../../../../domain/payment_order/PaymentOrderEntity";
+import type { PaymentOrder } from "../../../../core/entities/PaymentOrderEntity";
 
 export interface PaymentProcessFormData {
   fullName: string;

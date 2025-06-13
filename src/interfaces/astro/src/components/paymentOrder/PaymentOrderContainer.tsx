@@ -2,25 +2,14 @@ import { PaymentOrderForm } from "./PaymentOrderForm";
 import type { PaymentOrderFormData } from "../../types/paymentsOrder";
 import { Alert } from "../ui/Alert";
 import React, { useState } from "react";
+import { createPaymentOrder } from "../../api/paymentOrderApi";
 
 export const PaymentOrderContainer: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handlePaymentSubmit = async (data: PaymentOrderFormData) => {
     try {
-      const response = await fetch(`/api/payment_order/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        setError("Error creating payment");
-        return;
-      }
-      const res = await response.json();
+      const res = await createPaymentOrder(data);
       window.location.href = `/payment_order/${res.uuid}`;
     } catch (error) {
       setError("Error creando el pago");

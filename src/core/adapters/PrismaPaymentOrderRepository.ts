@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import type { PaymentOrder } from "../domain/payment_order/PaymentOrderEntity";
-import { PaymentOrderRepository } from "../domain/payment_order/PaymentOrderRepository";
+import type { PaymentOrder } from "../entities/PaymentOrderEntity";
+import { PaymentOrderRepository } from "../repositories/PaymentOrderRepository";
 
 const prisma = new PrismaClient();
 

@@ -1,4 +1,4 @@
-import { PaymentProvider } from "../payment_provider/PaymentProviderEntity";
+import { PaymentProvider } from "./PaymentProviderEntity";
 
 export interface PaymentOrder {
   uuid: string;

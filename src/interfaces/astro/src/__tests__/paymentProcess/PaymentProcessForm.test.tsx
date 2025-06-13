@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { PaymentProcessForm } from "../../components/paymentProcess/PaymentProcessForm";
-import type { PaymentProvider } from "../../../../../domain/payment_provider/PaymentProviderEntity";
+import type { PaymentProvider } from "../../../../../core/entities/PaymentProviderEntity";
 
 describe("PaymentProcessForm", () => {
   const providers: PaymentProvider[] = [

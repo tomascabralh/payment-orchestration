@@ -1,4 +1,4 @@
-import { PaymentProvider } from "../domain/payment_provider/PaymentProviderEntity";
+import { PaymentProvider } from "../core/entities/PaymentProviderEntity";
 
 export const providers: Record<string, PaymentProvider> = {
   mercadopago: {

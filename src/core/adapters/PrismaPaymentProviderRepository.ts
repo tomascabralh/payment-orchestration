@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import { PaymentProviderRepository } from "../domain/payment_provider/PaymentProviderRepository";
-import { PaymentProvider } from "../domain/payment_provider/PaymentProviderEntity";
+import { PaymentProviderRepository } from "../repositories/PaymentProviderRepository";
+import { PaymentProvider } from "../entities/PaymentProviderEntity";
 
 const prisma = new PrismaClient();
 

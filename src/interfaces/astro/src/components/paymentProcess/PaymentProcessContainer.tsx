@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { PaymentProcessForm } from "./PaymentProcessForm";
 import type { PaymentProcessFormData } from "../../types/paymentProcess";
-import type { PaymentOrder } from "../../../../../domain/payment_order/PaymentOrderEntity";
+import type { PaymentOrder } from "../../../../../core/entities/PaymentOrderEntity";
 import { Alert } from "../ui/Alert";
+import {
+  fetchPaymentOrder,
+  processPaymentOrder,
+} from "../../api/paymentOrderApi";
 
 interface PaymentProcessContainerProps {
   orderUuid: string;
@@ -19,21 +23,8 @@ export const PaymentProcessContainer: React.FC<
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await fetch(`/api/payment_order/${orderUuid}`);
-
-        if (!response.ok) {
-          throw new Error("Error fetching order");
-        }
-        const data = await response.json();
-        setOrder({
-          uuid: data.uuid,
-          amount: data.attributes.amount,
-          description: data.attributes.description,
-          countryIsoCode: data.attributes.country_iso_code,
-          createdAt: new Date(data.attributes.created_at),
-          paymentUrl: data.attributes.payment_url,
-          providers: data.attributes.providers,
-        });
+        const order = await fetchPaymentOrder(orderUuid);
+        setOrder(order);
       } catch (err) {
         setError("Error al cargar los datos del pago");
         console.error("Error:", err);
@@ -49,19 +40,7 @@ export const PaymentProcessContainer: React.FC<
     setSuccess(null);
 
     try {
-      const response = await fetch(`/api/payment_order/${orderUuid}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerCode: formData.provider }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setError(result.error || "Error al procesar el pago");
-        return;
-      }
-
+      const result = await processPaymentOrder(orderUuid, formData.provider);
       if (result.status === "success") {
         setSuccess(
           `¡Pago exitoso! ID de transacción: ${result.transaction_id}`
@@ -69,8 +48,8 @@ export const PaymentProcessContainer: React.FC<
       } else {
         setError(result.error || "El pago falló.");
       }
-    } catch (err) {
-      setError("Error al procesar el pago");
+    } catch (err: any) {
+      setError(err.message || "Error al procesar el pago");
       console.error("Error processing payment:", err);
     } finally {
       setIsLoading(false);
