@@ -65,5 +65,8 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
     ]
+  },
+  "prisma": {
+    "seed": "ts-node src/adapters/prisma/seed.ts"
   }
 }

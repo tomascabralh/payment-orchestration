@@ -1,4 +1,6 @@
 import type { PaymentOrderFormProps } from "../../types/paymentsOrder";
+import React from "react";
+import { Button } from "../ui/Button";
 
 export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
   onSubmit,
@@ -15,7 +17,11 @@ export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4"
+      data-testid="order-form"
+    >
       <div>
         <label htmlFor="amount" className="block text-gray-700 mb-2">
           Monto
@@ -27,6 +33,7 @@ export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
           required
           className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Ingrese el monto"
+          data-testid="amount-input"
         />
       </div>
 
@@ -41,6 +48,7 @@ export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
           required
           className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Descripción del pago"
+          data-testid="description-input"
         />
       </div>
 
@@ -53,6 +61,7 @@ export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
           name="country"
           required
           className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          data-testid="country-select"
         >
           <option value="AR">Argentina</option>
           <option value="CL">Chile</option>
@@ -60,12 +69,9 @@ export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
         </select>
       </div>
 
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
+      <Button type="submit" data-testid="submit-btn">
         Crear Pago
-      </button>
+      </Button>
     </form>
   );
 };

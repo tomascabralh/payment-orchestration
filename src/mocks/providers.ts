@@ -1,14 +1,39 @@
 import { PaymentProvider } from "../domain/payment_provider/PaymentProviderEntity";
 
 export const providers: Record<string, PaymentProvider> = {
-  autobots: {
-    name: "Autobots",
-    code: "autobots",
-    supportedCountries: ["US", "AR", "CL"],
+  mercadopago: {
+    name: "MercadoPago",
+    code: "mp",
+    supportedCountries: ["AR"],
   },
-  decepticons: {
-    name: "Decepticons",
-    code: "decepticons",
-    supportedCountries: ["US", "AR", "CL"],
+  webpay: {
+    name: "WebPay",
+    code: "wp",
+    supportedCountries: ["CL"],
+  },
+  khipu: {
+    name: "Khipu",
+    code: "kh",
+    supportedCountries: ["CL"],
+  },
+  stripe: {
+    name: "Stripe",
+    code: "stripe",
+    supportedCountries: ["US"],
+  },
+  glitchpay_ar: {
+    name: "GlitchPay",
+    code: "glitchpay_ar",
+    supportedCountries: ["AR"],
+  },
+  glitchpay_cl: {
+    name: "GlitchPay",
+    code: "glitchpay_cl",
+    supportedCountries: ["CL"],
+  },
+  glitchpay_us: {
+    name: "GlitchPay",
+    code: "glitchpay_us",
+    supportedCountries: ["US"],
   },
 };

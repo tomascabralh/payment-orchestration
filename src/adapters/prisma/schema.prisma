@@ -15,4 +15,15 @@ model PaymentOrder {
   createdAt       DateTime @default(now())
   paymentUrl      String
   providers       Json     @default("[]")
+}
+
+model PaymentProvider {
+  id                Int      @id @default(autoincrement())
+  name             String
+  code             String   @unique
+  supportedCountries String[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([code])
 } 

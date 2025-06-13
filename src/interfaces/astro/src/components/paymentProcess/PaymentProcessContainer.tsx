@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { PaymentProcessForm } from "./PaymentProcessForm";
 import type { PaymentProcessFormData } from "../../types/paymentProcess";
 import type { PaymentOrder } from "../../../../../domain/payment_order/PaymentOrderEntity";
+import { Alert } from "../ui/Alert";
 
 interface PaymentProcessContainerProps {
   orderUuid: string;
@@ -10,10 +11,10 @@ interface PaymentProcessContainerProps {
 export const PaymentProcessContainer: React.FC<
   PaymentProcessContainerProps
 > = ({ orderUuid }) => {
-  console.log("🚀 ~ orderUuid:", orderUuid);
   const [order, setOrder] = useState<PaymentOrder | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -45,11 +46,29 @@ export const PaymentProcessContainer: React.FC<
   const handleSubmit = async (formData: PaymentProcessFormData) => {
     setIsLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
-      // TODO: Implement actual API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Payment data:", formData);
+      const response = await fetch(`/api/payment_order/${orderUuid}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ providerCode: formData.provider }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.error || "Error al procesar el pago");
+        return;
+      }
+
+      if (result.status === "success") {
+        setSuccess(
+          `¡Pago exitoso! ID de transacción: ${result.transaction_id}`
+        );
+      } else {
+        setError(result.error || "El pago falló.");
+      }
     } catch (err) {
       setError("Error al procesar el pago");
       console.error("Error processing payment:", err);
@@ -61,9 +80,22 @@ export const PaymentProcessContainer: React.FC<
   if (error) {
     return (
       <div className="max-w-md mx-auto p-6">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-          {error}
-        </div>
+        <Alert type="error">{error}</Alert>
+        {order && (
+          <PaymentProcessForm
+            onSubmit={handleSubmit}
+            order={order}
+            isLoading={isLoading}
+          />
+        )}
+      </div>
+    );
+  }
+
+  if (success) {
+    return (
+      <div className="max-w-md mx-auto p-6">
+        <Alert type="success">{success}</Alert>
       </div>
     );
   }

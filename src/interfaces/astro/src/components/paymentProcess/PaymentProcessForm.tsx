@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import type {
   PaymentProcessFormProps,
   PaymentProcessFormData,
 } from "../../types/paymentProcess";
 import type { PaymentProvider } from "../../../../../domain/payment_provider/PaymentProviderEntity";
+import { Button } from "../ui/Button";
 
 export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   onSubmit,
   order,
   isLoading = false,
 }) => {
-  const [form, setForm] = useState<PaymentProcessFormData>({
+  const [form, setForm] = React.useState<PaymentProcessFormData>({
     fullName: "",
     documentType: "dni",
     documentNumber: "",
@@ -32,7 +33,7 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold mb-2">{order.description}</h1>
+        <h1 className="text-2xl font-bold mb-2">Pago de Orden</h1>
         <p className="text-gray-600 mb-1">
           Monto:{" "}
           <span className="font-mono font-semibold">${order.amount}</span>
@@ -40,7 +41,11 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
         <p className="text-gray-600">Descripción: {order.description}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+        data-testid="payment-form"
+      >
         <div>
           <label className="block text-gray-700 mb-2">Proveedor de pago</label>
           <select
@@ -50,10 +55,15 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
             required
             disabled={isLoading}
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            data-testid="provider-select"
           >
             <option value="">Seleccione un proveedor</option>
             {order.providers.map((prov: PaymentProvider) => (
-              <option key={prov.code} value={prov.code}>
+              <option
+                key={prov.code}
+                value={prov.code}
+                data-testid={`provider-option-${prov.code}`}
+              >
                 {prov.name}
               </option>
             ))}
@@ -70,6 +80,7 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
             disabled={isLoading}
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Nombre completo"
+            data-testid="fullName-input"
           />
         </div>
 
@@ -85,6 +96,7 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
               required
               disabled={isLoading}
               className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="documentType-select"
             >
               <option value="dni">DNI</option>
               <option value="passport">Pasaporte</option>
@@ -101,6 +113,7 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
               disabled={isLoading}
               className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Número"
+              data-testid="documentNumber-input"
             />
           </div>
         </div>
@@ -116,16 +129,13 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
             disabled={isLoading}
             className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="correo@ejemplo.com"
+            data-testid="email-input"
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <Button type="submit" disabled={isLoading} data-testid="submit-btn">
           {isLoading ? "Procesando..." : "Pagar"}
-        </button>
+        </Button>
       </form>
     </div>
   );

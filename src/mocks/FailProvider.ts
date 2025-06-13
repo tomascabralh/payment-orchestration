@@ -1,3 +1,7 @@
 export const FailProvider = async () => {
-  throw new Error('Provider failed');
+  return {
+    status: "fail",
+    error: "Transaction failed",
+    transaction_id: null,
+  };
 };

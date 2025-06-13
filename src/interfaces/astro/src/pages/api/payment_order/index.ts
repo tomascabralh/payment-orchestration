@@ -1,12 +1,19 @@
 import type { PaymentOrder } from "../../../../../../domain/payment_order/PaymentOrderEntity";
 import { PaymentOrderService } from "../../../../../../application/paymentOrder/PaymentOrderService";
 import { PrismaPaymentOrderRepository } from "../../../../../../adapters/PrismaPaymentOrderRepository";
+import { PrismaPaymentProviderRepository } from "../../../../../../adapters/PrismaPaymentProviderRepository";
+import { GetProvidersByCountryService } from "../../../../../../application/paymentProvider/GetProvidersByCountryService";
 import { v4 as uuidv4 } from "uuid";
 
 export const prerender = false;
 
-const repository = new PrismaPaymentOrderRepository();
-const service = new PaymentOrderService(repository);
+const orderRepository = new PrismaPaymentOrderRepository();
+const providerRepository = new PrismaPaymentProviderRepository();
+
+const getProvidersService = new GetProvidersByCountryService(
+  providerRepository
+);
+const service = new PaymentOrderService(orderRepository, getProvidersService);
 
 export async function POST({ request }: { request: Request }) {
   try {
