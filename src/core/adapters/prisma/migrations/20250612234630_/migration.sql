@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "PaymentOrder" ADD COLUMN     "providers" JSONB NOT NULL DEFAULT '[]',
-ALTER COLUMN "amount" SET DATA TYPE DOUBLE PRECISION;
