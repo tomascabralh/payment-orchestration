@@ -1,10 +1,12 @@
 import { GetPaymentOrderUseCase } from "../../application/GetPaymentOrderUseCase";
 import { CreatePaymentOrderUseCase } from "../../application/CreatePaymentOrderUseCase";
+import { ProcessPaymentOrderUseCase } from "../../application/ProcessPaymentOrderUseCase";
 
 export class PaymentOrderController {
   constructor(
     private readonly getOrderUseCase: GetPaymentOrderUseCase,
-    private readonly createOrderUseCase: CreatePaymentOrderUseCase
+    private readonly createOrderUseCase: CreatePaymentOrderUseCase,
+    private readonly processOrderUseCase: ProcessPaymentOrderUseCase
   ) {}
 
   async get(
@@ -36,6 +38,45 @@ export class PaymentOrderController {
         },
       });
     } catch (e: any) {
+      return res.status(400).json({ error: e.message });
+    }
+  }
+
+  async process(
+    req: { params: { uuid: string }; body: { provider_id: string } },
+    res: any
+  ) {
+    try {
+      const { uuid } = req.params;
+      const { provider_id } = req.body;
+
+      const order = await this.processOrderUseCase.execute({
+        uuid,
+        providerId: provider_id,
+      });
+
+      return res.json({
+        uuid: order.uuid,
+        type: "payment_order",
+        attributes: {
+          amount: order.amount,
+          description: order.description,
+          country_iso_code: order.countryIsoCode,
+          status: order.status,
+          created_at: order.createdAt,
+          transactions: order.transactions.map((t) => ({
+            transaction_id: t.transactionId,
+            provider: t.provider,
+            status: t.status,
+            amount: t.amount,
+            created_at: t.createdAt,
+          })),
+        },
+      });
+    } catch (e: any) {
+      if (e.message === "Payment order not found") {
+        return res.status(404).json({ error: e.message });
+      }
       return res.status(400).json({ error: e.message });
     }
   }

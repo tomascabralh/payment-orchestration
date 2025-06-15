@@ -25,14 +25,28 @@ export async function fetchPaymentOrder(uuid: string): Promise<PaymentOrder> {
     description: data.description,
     countryIsoCode: data.countryIsoCode,
     createdAt: new Date(data.createdAt),
+    status: data.status,
+    transactions: data.transactions,
+    process: (
+      provider: string,
+      transactionId: string,
+      outcome: "success" | "failure"
+    ) => {
+      return processPaymentOrder(uuid, provider, transactionId, outcome);
+    },
   };
 }
 
-export async function processPaymentOrder(uuid: string, providerCode: string) {
+export async function processPaymentOrder(
+  uuid: string,
+  providerCode: string,
+  transactionId: string,
+  outcome: "success" | "failure"
+) {
   const response = await fetch(`/api/payment_order/${uuid}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ providerCode }),
+    body: JSON.stringify({ providerCode, transactionId, outcome }),
   });
   const result = await response.json();
   if (!response.ok) {

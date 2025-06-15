@@ -24,7 +24,6 @@ export const PaymentProcessContainer: React.FC<
     const fetchOrder = async () => {
       try {
         const order = await fetchPaymentOrder(orderUuid);
-        console.log("🚀 ~ fetchOrder ~ order:", order);
         setOrder(order);
       } catch (err) {
         setError("Error al cargar los datos del pago");
@@ -41,10 +40,15 @@ export const PaymentProcessContainer: React.FC<
     setSuccess(null);
 
     try {
-      const result = await processPaymentOrder(orderUuid, formData.provider);
-      if (result.status === "success") {
+      const result = await processPaymentOrder(
+        orderUuid,
+        formData.provider,
+        formData.transactionId,
+        formData.status
+      );
+      if (result.attributes.status === "PAID") {
         setSuccess(
-          `¡Pago exitoso! ID de transacción: ${result.transaction_id}`
+          `¡Pago exitoso! ID de transacción: ${result.attributes.transactions[0].transaction_id}`
         );
       } else {
         setError(result.error || "El pago falló.");

@@ -2,11 +2,21 @@ import { PaymentOrderController } from "../../../../../core/api/controllers/Paym
 import { CreatePaymentOrderUseCase } from "../../../../../core/application/CreatePaymentOrderUseCase";
 import { PaymentOrderRepositoryImpl } from "../../../../../core/infrastructure/PaymentOrderRepositoryImpl";
 import { GetPaymentOrderUseCase } from "../../../../../core/application/GetPaymentOrderUseCase";
+import { ProcessPaymentOrderUseCase } from "../../../../../core/application/ProcessPaymentOrderUseCase";
+import { PaymentGatewayAdapter } from "../../../../../core/infrastructure/PaymentGatewayAdapter";
 
 const repo = new PaymentOrderRepositoryImpl();
 const createUseCase = new CreatePaymentOrderUseCase(repo);
 const getUseCase = new GetPaymentOrderUseCase(repo);
-const controller = new PaymentOrderController(getUseCase, createUseCase);
+const processUseCase = new ProcessPaymentOrderUseCase(
+  repo,
+  new PaymentGatewayAdapter()
+);
+const controller = new PaymentOrderController(
+  getUseCase,
+  createUseCase,
+  processUseCase
+);
 
 export const prerender = false;
 

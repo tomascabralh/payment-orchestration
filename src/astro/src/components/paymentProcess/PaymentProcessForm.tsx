@@ -1,5 +1,4 @@
 import type { PaymentProcessFormProps } from "../../types/paymentProcess";
-import type { PaymentProvider } from "../../../../core/domain/PaymentOrder";
 import { Button } from "../ui/Button";
 import { usePaymentProcessForm } from "../hooks/usePaymentProcessForm";
 import React, { useEffect, useState } from "react";
@@ -9,8 +8,8 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   order,
   isLoading = false,
 }) => {
-  const { form, handleChange, setForm, resetForm } = usePaymentProcessForm();
-  const [providers, setProviders] = useState<PaymentProvider[]>([]);
+  const { form, handleChange } = usePaymentProcessForm();
+  const [providers, setProviders] = useState([]);
   const [loadingProviders, setLoadingProviders] = useState(true);
 
   useEffect(() => {
@@ -63,7 +62,7 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
               data-testid="provider-select"
             >
               <option value="">Seleccione un proveedor</option>
-              {providers.map((prov: PaymentProvider) => (
+              {providers.map((prov: any) => (
                 <option
                   key={prov.code}
                   value={prov.code}

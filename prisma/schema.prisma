@@ -7,12 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+}
+
 model PaymentOrder {
   uuid            String   @id
   amount          Float
   description     String
   countryIsoCode  String
   createdAt       DateTime @default(now())
+  status          PaymentStatus @default(PENDING)
+  transactions    PaymentTransaction[]
+}
+
+model PaymentTransaction {
+  id              Int @id @default(autoincrement())
+  transactionId   String
+  provider        String
+  status          PaymentStatus
+  amount          Float
+  createdAt       DateTime @default(now())
+  
+  orderId         String
+  order           PaymentOrder @relation(fields: [orderId], references: [uuid])
+
+  @@index([orderId])
 }
 
 model PaymentProvider {

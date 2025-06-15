@@ -13,15 +13,12 @@ export class CreatePaymentOrderUseCase {
   async execute(cmd: CreatePaymentOrderCommand): Promise<PaymentOrder> {
     const uuid = crypto.randomUUID();
     const createdAt = new Date();
-    const paymentUrl = `/payment_order/${uuid}`;
     const order = new PaymentOrder(
       uuid,
       cmd.amount,
       cmd.description,
       cmd.countryIsoCode,
-      createdAt,
-      paymentUrl,
-      []
+      createdAt
     );
     return this.repo.create(order);
   }
