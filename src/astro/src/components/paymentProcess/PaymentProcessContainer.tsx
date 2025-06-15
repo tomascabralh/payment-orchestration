@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { PaymentProcessForm } from "./PaymentProcessForm";
 import type { PaymentProcessFormData } from "../../types/paymentProcess";
-import type { PaymentOrder } from "../../../../core/entities/PaymentOrderEntity";
+import type { PaymentOrder } from "../../../../core/domain/PaymentOrder";
 import { Alert } from "../ui/Alert";
 import {
   fetchPaymentOrder,
@@ -24,6 +24,7 @@ export const PaymentProcessContainer: React.FC<
     const fetchOrder = async () => {
       try {
         const order = await fetchPaymentOrder(orderUuid);
+        console.log("🚀 ~ fetchOrder ~ order:", order);
         setOrder(order);
       } catch (err) {
         setError("Error al cargar los datos del pago");

@@ -1,7 +1,5 @@
-// API/network logic for payment orders
-
 import type { PaymentOrderFormData } from "../types/paymentsOrder";
-import type { PaymentOrder } from "../../../core/entities/PaymentOrderEntity";
+import type { PaymentOrder } from "../../../core/domain/PaymentOrder";
 
 export async function createPaymentOrder(data: PaymentOrderFormData) {
   const response = await fetch(`/api/payment_order/`, {
@@ -23,12 +21,10 @@ export async function fetchPaymentOrder(uuid: string): Promise<PaymentOrder> {
   const data = await response.json();
   return {
     uuid: data.uuid,
-    amount: data.attributes.amount,
-    description: data.attributes.description,
-    countryIsoCode: data.attributes.country_iso_code,
-    createdAt: new Date(data.attributes.created_at),
-    paymentUrl: data.attributes.payment_url,
-    providers: data.attributes.providers,
+    amount: data.amount,
+    description: data.description,
+    countryIsoCode: data.countryIsoCode,
+    createdAt: new Date(data.createdAt),
   };
 }
 

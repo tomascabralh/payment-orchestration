@@ -1,7 +1,8 @@
 import type { PaymentProcessFormProps } from "../../types/paymentProcess";
-import type { PaymentProvider } from "../../../../core/entities/PaymentProviderEntity";
+import type { PaymentProvider } from "../../../../core/domain/PaymentOrder";
 import { Button } from "../ui/Button";
 import { usePaymentProcessForm } from "../hooks/usePaymentProcessForm";
+import React, { useEffect, useState } from "react";
 
 export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   onSubmit,
@@ -9,6 +10,22 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   isLoading = false,
 }) => {
   const { form, handleChange, setForm, resetForm } = usePaymentProcessForm();
+  const [providers, setProviders] = useState<PaymentProvider[]>([]);
+  const [loadingProviders, setLoadingProviders] = useState(true);
+
+  useEffect(() => {
+    setLoadingProviders(true);
+    fetch(`/api/payment_methods?country_code=${order.countryIsoCode}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProviders(data);
+        setLoadingProviders(false);
+      })
+      .catch(() => {
+        setProviders([]);
+        setLoadingProviders(false);
+      });
+  }, [order.countryIsoCode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,26 +50,30 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
       >
         <div>
           <label className="block text-gray-700 mb-2">Proveedor de pago</label>
-          <select
-            name="provider"
-            value={form.provider}
-            onChange={handleChange}
-            required
-            disabled={isLoading}
-            className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            data-testid="provider-select"
-          >
-            <option value="">Seleccione un proveedor</option>
-            {order.providers.map((prov: PaymentProvider) => (
-              <option
-                key={prov.code}
-                value={prov.code}
-                data-testid={`provider-option-${prov.code}`}
-              >
-                {prov.name}
-              </option>
-            ))}
-          </select>
+          {loadingProviders ? (
+            <div>Cargando proveedores...</div>
+          ) : (
+            <select
+              name="provider"
+              value={form.provider}
+              onChange={handleChange}
+              required
+              disabled={isLoading}
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              data-testid="provider-select"
+            >
+              <option value="">Seleccione un proveedor</option>
+              {providers.map((prov: PaymentProvider) => (
+                <option
+                  key={prov.code}
+                  value={prov.code}
+                  data-testid={`provider-option-${prov.code}`}
+                >
+                  {prov.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div>

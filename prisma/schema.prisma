@@ -13,8 +13,6 @@ model PaymentOrder {
   description     String
   countryIsoCode  String
   createdAt       DateTime @default(now())
-  paymentUrl      String
-  providers       Json     @default("[]")
 }
 
 model PaymentProvider {
