@@ -43,12 +43,18 @@ export class PaymentOrderController {
   }
 
   async process(
-    req: { params: { uuid: string }; body: { provider_id: string } },
+    req: {
+      params: { uuid: string };
+      body: {
+        provider_id: string;
+        redirect_url?: string;
+      };
+    },
     res: any
   ) {
     try {
       const { uuid } = req.params;
-      const { provider_id } = req.body;
+      const { provider_id, redirect_url } = req.body;
 
       const order = await this.processOrderUseCase.execute({
         uuid,
@@ -70,12 +76,19 @@ export class PaymentOrderController {
             status: t.status,
             amount: t.amount,
             created_at: t.createdAt,
+            redirect_url: t.redirectUrl,
           })),
         },
       });
     } catch (e: any) {
       if (e.message === "Payment order not found") {
         return res.status(404).json({ error: e.message });
+      }
+      if (e.message === "No payment providers available for this order") {
+        return res.status(400).json({ error: e.message });
+      }
+      if (e.message === "All payment providers failed") {
+        return res.status(500).json({ error: e.message });
       }
       return res.status(400).json({ error: e.message });
     }

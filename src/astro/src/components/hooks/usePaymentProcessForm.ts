@@ -10,6 +10,10 @@ export function usePaymentProcessForm(
     documentNumber: initial?.documentNumber || "",
     email: initial?.email || "",
     provider: initial?.provider || "",
+    paymentMethod: initial?.paymentMethod || "credit_card",
+    transactionId: initial?.transactionId || "",
+    status: initial?.status || "success",
+    redirectUrl: initial?.redirectUrl || "",
   });
 
   const handleChange = (
@@ -25,6 +29,10 @@ export function usePaymentProcessForm(
       documentNumber: "",
       email: "",
       provider: "",
+      paymentMethod: "credit_card",
+      transactionId: "",
+      status: "success",
+      redirectUrl: "",
     });
   };
 

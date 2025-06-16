@@ -6,8 +6,10 @@ export interface PaymentProcessFormData {
   documentNumber: string;
   email: string;
   provider: string;
+  paymentMethod: string;
   transactionId: string;
   status: "success" | "failure";
+  redirectUrl?: string;
 }
 
 export interface PaymentProcessFormProps {

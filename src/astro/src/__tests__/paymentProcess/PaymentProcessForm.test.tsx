@@ -1,25 +1,46 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PaymentProcessForm } from "../../components/paymentProcess/PaymentProcessForm";
-import type { PaymentProvider } from "../../../../core/entities/PaymentProviderEntity";
+import { PaymentMethodVO } from "../../../../core/domain/PaymentMethodVO";
+import {
+  PaymentOrder,
+  PaymentStatus,
+} from "../../../../core/domain/PaymentOrder";
+
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
 describe("PaymentProcessForm", () => {
-  const providers: PaymentProvider[] = [
+  const providers: PaymentMethodVO[] = [
     { name: "TestPay", code: "tp", supportedCountries: ["AR"] },
     { name: "GlitchPay", code: "glitchpay_ar", supportedCountries: ["AR"] },
   ];
-  const order = {
-    uuid: "1",
-    amount: 100,
-    description: "Test order",
-    countryIsoCode: "AR",
-    createdAt: new Date(),
-    paymentUrl: "",
-    providers,
-  };
+  const order = new PaymentOrder(
+    "1",
+    100,
+    "Test order",
+    "AR",
+    new Date(),
+    PaymentStatus.PENDING,
+    []
+  );
 
-  it("renders all fields and submits form data", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("renders all fields and submits form data", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => providers,
+    });
+
     const handleSubmit = jest.fn();
     render(<PaymentProcessForm onSubmit={handleSubmit} order={order} />);
+
+    // Wait for providers to load
+    await waitFor(() =>
+      expect(screen.getByTestId("provider-select")).toBeInTheDocument()
+    );
 
     fireEvent.change(screen.getByTestId("provider-select"), {
       target: { value: "tp" },
@@ -45,6 +66,8 @@ describe("PaymentProcessForm", () => {
       documentNumber: "123456",
       email: "john@example.com",
       provider: "tp",
+      transactionId: "",
+      status: "success",
     });
   });
 });

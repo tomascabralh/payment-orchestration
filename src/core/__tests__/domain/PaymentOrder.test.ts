@@ -1,4 +1,4 @@
-import { PaymentOrder } from "../../domain/PaymentOrder";
+import { PaymentOrder, PaymentStatus } from "../../domain/PaymentOrder";
 
 describe("PaymentOrder", () => {
   it("should construct with all fields", () => {
@@ -8,5 +8,40 @@ describe("PaymentOrder", () => {
     expect(vo.description).toBe("description");
     expect(vo.countryIsoCode).toBe("AR");
     expect(vo.createdAt).toBeInstanceOf(Date);
+  });
+
+  it("should create a new payment order with default status", () => {
+    const order = new PaymentOrder("123", 100, "Test order", "AR", new Date());
+
+    expect(order.uuid).toBe("123");
+    expect(order.amount).toBe(100);
+    expect(order.description).toBe("Test order");
+    expect(order.countryIsoCode).toBe("AR");
+    expect(order.status).toBe(PaymentStatus.PENDING);
+    expect(order.transactions).toHaveLength(0);
+  });
+
+  it("should process a successful payment", () => {
+    const order = new PaymentOrder("123", 100, "Test order", "AR", new Date());
+
+    order.process("tp", "tx-1", "success");
+
+    expect(order.status).toBe(PaymentStatus.PAID);
+    expect(order.transactions).toHaveLength(1);
+    expect(order.transactions[0].transactionId).toBe("tx-1");
+    expect(order.transactions[0].provider).toBe("tp");
+    expect(order.transactions[0].status).toBe(PaymentStatus.PAID);
+  });
+
+  it("should process a failed payment", () => {
+    const order = new PaymentOrder("123", 100, "Test order", "AR", new Date());
+
+    order.process("tp", "tx-1", "failure");
+
+    expect(order.status).toBe(PaymentStatus.FAILED);
+    expect(order.transactions).toHaveLength(1);
+    expect(order.transactions[0].transactionId).toBe("tx-1");
+    expect(order.transactions[0].provider).toBe("tp");
+    expect(order.transactions[0].status).toBe(PaymentStatus.FAILED);
   });
 });

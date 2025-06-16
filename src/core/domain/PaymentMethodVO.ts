@@ -5,3 +5,10 @@ export class PaymentMethodVO {
     public readonly supportedCountries: string[]
   ) {}
 }
+
+export interface PaymentResult {
+  success: boolean;
+  transactionId: string;
+  redirectUrl?: string;
+  error?: string;
+}

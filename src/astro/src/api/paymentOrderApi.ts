@@ -41,7 +41,8 @@ export async function processPaymentOrder(
   uuid: string,
   providerCode: string,
   transactionId: string,
-  outcome: "success" | "failure"
+  outcome: "success" | "failure",
+  redirectUrl?: string
 ) {
   const response = await fetch(`/api/payment_order/${uuid}`, {
     method: "POST",

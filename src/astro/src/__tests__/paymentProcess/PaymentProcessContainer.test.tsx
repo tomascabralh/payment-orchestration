@@ -8,14 +8,14 @@ describe("PaymentProcessContainer", () => {
   const orderUuid = "order-1";
   const orderResponse = {
     uuid: orderUuid,
-    attributes: {
-      amount: 100,
-      description: "desc",
-      country_iso_code: "AR",
-      created_at: new Date().toISOString(),
-      payment_url: "",
-      providers: [{ name: "TestPay", code: "tp", supportedCountries: ["AR"] }],
-    },
+    amount: 100,
+    description: "desc",
+    countryIsoCode: "AR",
+    createdAt: new Date().toISOString(),
+    paymentUrl: "",
+    providers: [{ name: "TestPay", code: "tp", supportedCountries: ["AR"] }],
+    status: "PENDING",
+    transactions: [],
   };
 
   beforeEach(() => {
@@ -27,10 +27,43 @@ describe("PaymentProcessContainer", () => {
       .mockResolvedValueOnce({ ok: true, json: async () => orderResponse }) // fetch order
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ status: "success", transaction_id: "tx-1" }),
+        json: async () => [
+          { name: "TestPay", code: "tp", supportedCountries: ["AR"] },
+        ],
+      }) // fetch providers
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          uuid: orderUuid,
+          type: "payment_order",
+          attributes: {
+            amount: 100,
+            description: "desc",
+            country_iso_code: "AR",
+            status: "PAID",
+            created_at: new Date().toISOString(),
+            transactions: [
+              {
+                transaction_id: "tx-1",
+                provider: "tp",
+                status: "PAID",
+                amount: 100,
+                created_at: new Date().toISOString(),
+              },
+            ],
+          },
+        }),
       }); // process payment
     render(<PaymentProcessContainer orderUuid={orderUuid} />);
+
+    // Wait for order details to load
     await waitFor(() => expect(screen.getByText(/desc/)).toBeInTheDocument());
+
+    // Wait for providers to load
+    await waitFor(() =>
+      expect(screen.getByTestId("provider-select")).toBeInTheDocument()
+    );
+
     fireEvent.change(screen.getByTestId("provider-select"), {
       target: { value: "tp" },
     });
@@ -57,11 +90,25 @@ describe("PaymentProcessContainer", () => {
     mockFetch
       .mockResolvedValueOnce({ ok: true, json: async () => orderResponse }) // fetch order
       .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [
+          { name: "TestPay", code: "tp", supportedCountries: ["AR"] },
+        ],
+      }) // fetch providers
+      .mockResolvedValueOnce({
         ok: false,
         json: async () => ({ error: "fail" }),
       }); // process payment
     render(<PaymentProcessContainer orderUuid={orderUuid} />);
+
+    // Wait for order details to load
     await waitFor(() => expect(screen.getByText(/desc/)).toBeInTheDocument());
+
+    // Wait for providers to load
+    await waitFor(() =>
+      expect(screen.getByTestId("provider-select")).toBeInTheDocument()
+    );
+
     fireEvent.change(screen.getByTestId("provider-select"), {
       target: { value: "tp" },
     });

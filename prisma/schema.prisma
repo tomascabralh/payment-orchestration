@@ -38,13 +38,27 @@ model PaymentTransaction {
   @@index([orderId])
 }
 
-model PaymentProvider {
+model PaymentMethod {
   id                Int      @id @default(autoincrement())
-  name             String
   code             String   @unique
+  name             String
   supportedCountries String[]
+  isActive         Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   @@index([code])
+}
+
+model ProviderMetric {
+  id                Int      @id @default(autoincrement())
+  providerCode      String   @unique
+  successCount      Int      @default(0)
+  failureCount      Int      @default(0)
+  totalResponseTime BigInt   @default(0)
+  lastUsed          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([providerCode])
 } 

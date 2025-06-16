@@ -11,7 +11,8 @@ export class PaymentTransaction {
     public readonly provider: string,
     public readonly status: PaymentStatus,
     public readonly amount: number,
-    public readonly createdAt: Date
+    public readonly createdAt: Date,
+    public readonly redirectUrl?: string
   ) {}
 }
 
@@ -35,7 +36,8 @@ export class PaymentOrder {
   process(
     provider: string,
     transactionId: string,
-    outcome: "success" | "failure"
+    outcome: "success" | "failure",
+    redirectUrl?: string
   ) {
     const newStatus =
       outcome === "success" ? PaymentStatus.PAID : PaymentStatus.FAILED;
@@ -46,7 +48,8 @@ export class PaymentOrder {
         provider,
         newStatus,
         this.amount,
-        new Date()
+        new Date(),
+        redirectUrl
       )
     );
   }

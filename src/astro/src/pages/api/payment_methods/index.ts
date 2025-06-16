@@ -1,8 +1,10 @@
 import { PaymentMethodsController } from "../../../../../core/api/controllers/PaymentMethodsController";
 import { ListCountryPaymentMethodsUseCase } from "../../../../../core/application/ListCountryPaymentMethodsUseCase";
 import { PaymentMethodsCountryAdapterImpl } from "../../../../../core/infrastructure/PaymentMethodsCountryAdapter";
+import { PrismaPaymentMethodRepository } from "../../../../../core/infrastructure/repositories/PrismaPaymentMethodRepository";
 
-const adapter = new PaymentMethodsCountryAdapterImpl();
+const repo = new PrismaPaymentMethodRepository();
+const adapter = new PaymentMethodsCountryAdapterImpl(repo);
 const useCase = new ListCountryPaymentMethodsUseCase(adapter);
 const controller = new PaymentMethodsController(useCase);
 

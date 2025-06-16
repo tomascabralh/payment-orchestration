@@ -2,6 +2,10 @@ import type { PaymentProcessFormProps } from "../../types/paymentProcess";
 import { Button } from "../ui/Button";
 import { usePaymentProcessForm } from "../hooks/usePaymentProcessForm";
 import React, { useEffect, useState } from "react";
+import {
+  fetchPaymentMethods,
+  type PaymentMethod,
+} from "../../api/paymentMethodsApi";
 
 export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   onSubmit,
@@ -9,13 +13,12 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
   isLoading = false,
 }) => {
   const { form, handleChange } = usePaymentProcessForm();
-  const [providers, setProviders] = useState([]);
+  const [providers, setProviders] = useState<PaymentMethod[]>([]);
   const [loadingProviders, setLoadingProviders] = useState(true);
 
   useEffect(() => {
     setLoadingProviders(true);
-    fetch(`/api/payment_methods?country_code=${order.countryIsoCode}`)
-      .then((res) => res.json())
+    fetchPaymentMethods(order.countryIsoCode)
       .then((data) => {
         setProviders(data);
         setLoadingProviders(false);
@@ -30,6 +33,13 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
     e.preventDefault();
     onSubmit(form);
   };
+
+  // Handle redirect if we have a redirect URL
+  useEffect(() => {
+    if (form.redirectUrl) {
+      window.location.href = form.redirectUrl;
+    }
+  }, [form.redirectUrl]);
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">

@@ -4,13 +4,19 @@ import { GetPaymentOrderUseCase } from "../../../../../core/application/GetPayme
 import { CreatePaymentOrderUseCase } from "../../../../../core/application/CreatePaymentOrderUseCase";
 import { ProcessPaymentOrderUseCase } from "../../../../../core/application/ProcessPaymentOrderUseCase";
 import { PaymentGatewayAdapter } from "../../../../../core/infrastructure/PaymentGatewayAdapter";
+import { PaymentMethodRegistry } from "../../../../../core/application/services/PaymentMethodRegistry";
+import { PrismaPaymentMethodRepository } from "../../../../../core/infrastructure/repositories/PrismaPaymentMethodRepository";
+import { PrismaProviderMetricsRepository } from "../../../../../core/infrastructure/repositories/PrismaProviderMetricsRepository";
 
 const repo = new PaymentOrderRepositoryImpl();
 const getUseCase = new GetPaymentOrderUseCase(repo);
 const createUseCase = new CreatePaymentOrderUseCase(repo);
 const processUseCase = new ProcessPaymentOrderUseCase(
   repo,
-  new PaymentGatewayAdapter()
+  new PaymentGatewayAdapter(),
+  new PaymentMethodRegistry(),
+  new PrismaPaymentMethodRepository(),
+  new PrismaProviderMetricsRepository()
 );
 const controller = new PaymentOrderController(
   getUseCase,
@@ -59,9 +65,13 @@ export async function POST({
 
   const body = await request.json();
   const provider_id = body.providerCode;
+  const redirect_url = body.redirectUrl;
 
   await controller.process(
-    { params: { uuid }, body: { provider_id } },
+    {
+      params: { uuid },
+      body: { provider_id, redirect_url },
+    },
     {
       status: (code: number) => {
         statusCode = code;

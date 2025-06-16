@@ -4,13 +4,20 @@ import { PaymentOrderRepositoryImpl } from "../../../../../core/infrastructure/P
 import { GetPaymentOrderUseCase } from "../../../../../core/application/GetPaymentOrderUseCase";
 import { ProcessPaymentOrderUseCase } from "../../../../../core/application/ProcessPaymentOrderUseCase";
 import { PaymentGatewayAdapter } from "../../../../../core/infrastructure/PaymentGatewayAdapter";
+import { PaymentMethodRegistry } from "../../../../../core/application/services/PaymentMethodRegistry";
+import { PrismaPaymentMethodRepository } from "../../../../../core/infrastructure/repositories/PrismaPaymentMethodRepository";
+import { PrismaProviderMetricsRepository } from "../../../../../core/infrastructure/repositories/PrismaProviderMetricsRepository";
 
 const repo = new PaymentOrderRepositoryImpl();
 const createUseCase = new CreatePaymentOrderUseCase(repo);
 const getUseCase = new GetPaymentOrderUseCase(repo);
+
 const processUseCase = new ProcessPaymentOrderUseCase(
   repo,
-  new PaymentGatewayAdapter()
+  new PaymentGatewayAdapter(),
+  new PaymentMethodRegistry(),
+  new PrismaPaymentMethodRepository(),
+  new PrismaProviderMetricsRepository()
 );
 const controller = new PaymentOrderController(
   getUseCase,
