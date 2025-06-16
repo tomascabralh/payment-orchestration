@@ -1,4 +1,4 @@
-import { PaymentOrderRepositoryImpl } from "../../infrastructure/PaymentOrderRepositoryImpl";
+import { PaymentOrderRepositoryImpl } from "../../../infrastructure/repositories/PaymentOrderRepositoryImpl";
 
 describe("PaymentOrderRepositoryImpl", () => {
   it("should construct", () => {

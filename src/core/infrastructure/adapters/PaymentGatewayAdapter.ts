@@ -1,4 +1,4 @@
-import { PaymentResult } from "../domain/PaymentMethodVO";
+import { PaymentResult } from "../../domain/PaymentMethodVO";
 
 export class PaymentGatewayAdapter {
   async processPayment(providerCode: string): Promise<PaymentResult> {

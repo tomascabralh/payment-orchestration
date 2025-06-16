@@ -1,9 +1,9 @@
 import { PaymentOrderController } from "../../../../../core/api/controllers/PaymentOrderController";
-import { PaymentOrderRepositoryImpl } from "../../../../../core/infrastructure/PaymentOrderRepositoryImpl";
+import { PaymentOrderRepositoryImpl } from "../../../../../core/infrastructure/repositories/PaymentOrderRepositoryImpl";
 import { GetPaymentOrderUseCase } from "../../../../../core/application/GetPaymentOrderUseCase";
 import { CreatePaymentOrderUseCase } from "../../../../../core/application/CreatePaymentOrderUseCase";
 import { ProcessPaymentOrderUseCase } from "../../../../../core/application/ProcessPaymentOrderUseCase";
-import { PaymentGatewayAdapter } from "../../../../../core/infrastructure/PaymentGatewayAdapter";
+import { PaymentGatewayAdapter } from "../../../../../core/infrastructure/adapters/PaymentGatewayAdapter";
 import { PaymentMethodRegistry } from "../../../../../core/application/services/PaymentMethodRegistry";
 import { PrismaPaymentMethodRepository } from "../../../../../core/infrastructure/repositories/PrismaPaymentMethodRepository";
 import { PrismaProviderMetricsRepository } from "../../../../../core/infrastructure/repositories/PrismaProviderMetricsRepository";

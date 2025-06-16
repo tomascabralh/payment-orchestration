@@ -66,8 +66,10 @@ describe("PaymentProcessForm", () => {
       documentNumber: "123456",
       email: "john@example.com",
       provider: "tp",
+      paymentMethod: "credit_card",
       transactionId: "",
       status: "success",
+      redirectUrl: "",
     });
   });
 });

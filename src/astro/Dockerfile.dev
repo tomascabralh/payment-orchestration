@@ -1,0 +1,23 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install OpenSSL 1.1
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
+# Copy package files
+COPY package*.json ./
+COPY src/astro/package*.json ./src/astro/
+
+# Copy setup script
+COPY setup.sh /app/setup.sh
+RUN chmod +x /app/setup.sh
+
+# Copy source code
+COPY . .
+
+# Expose the port
+EXPOSE 4321
+
+# Start the setup script
+CMD ["sh", "/app/setup.sh"] 

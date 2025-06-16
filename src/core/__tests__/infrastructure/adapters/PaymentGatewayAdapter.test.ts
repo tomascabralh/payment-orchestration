@@ -1,4 +1,4 @@
-import { PaymentGatewayAdapter } from "../../infrastructure/PaymentGatewayAdapter";
+import { PaymentGatewayAdapter } from "../../../infrastructure/adapters/PaymentGatewayAdapter";
 
 const mockUUID = "12345678-1234-5678-1234-567812345678";
 global.crypto = {
@@ -19,16 +19,16 @@ describe("PaymentGatewayAdapter", () => {
     expect(result.error).toBeUndefined();
   });
 
-  it("should process a failed payment for always_fail provider", async () => {
-    const result = await adapter.processPayment("always_fail");
+  it("should process a failed payment for fail_bank provider", async () => {
+    const result = await adapter.processPayment("fail_bank");
 
     expect(result.success).toBe(false);
     expect(result.transactionId).toBeDefined();
     expect(result.error).toBe("Fail Bank caused a failure.");
   });
 
-  it("should process a failed payment for case-insensitive always_fail provider", async () => {
-    const result = await adapter.processPayment("ALWAYS_FAIL");
+  it("should process a failed payment for case-insensitive fail_bank provider", async () => {
+    const result = await adapter.processPayment("FAIL_BANK");
 
     expect(result.success).toBe(false);
     expect(result.transactionId).toBeDefined();

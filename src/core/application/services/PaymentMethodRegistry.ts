@@ -15,7 +15,7 @@ export class PaymentMethodRegistry {
 
   private async loadProviders() {
     // Load providers for all supported countries
-    const countries = ["US", "AR"]; // Add more countries as needed
+    const countries = ["US", "AR"];
     for (const countryCode of countries) {
       const country = new CountryVO(countryCode);
       const methods = await this.repository.listByCountry(country);

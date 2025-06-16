@@ -1,6 +1,6 @@
 {
-  "name": "payment-orchestration",
-  "version": "0.0.1",
+  "name": "Payment orchestration",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "astro dev",
@@ -34,6 +34,7 @@
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
     "jest": "^30.0.0",
+    "ts-jest": "^29.1.2",
     "prisma": "^5.10.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

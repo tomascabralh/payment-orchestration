@@ -3,8 +3,8 @@ import {
   PaymentOrder,
   PaymentStatus,
   PaymentTransaction,
-} from "../domain/PaymentOrder";
-import { PaymentOrderRepository } from "../domain/PaymentOrderRepository";
+} from "../../domain/PaymentOrder";
+import { PaymentOrderRepository } from "../../domain/PaymentOrderRepository";
 
 const prisma = new PrismaClient();
 

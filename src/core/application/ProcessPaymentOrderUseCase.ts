@@ -1,6 +1,6 @@
 import { PaymentOrder, PaymentStatus } from "../domain/PaymentOrder";
 import { PaymentOrderRepository } from "../domain/PaymentOrderRepository";
-import { PaymentGatewayAdapter } from "../infrastructure/PaymentGatewayAdapter";
+import { PaymentGatewayAdapter } from "../infrastructure/adapters/PaymentGatewayAdapter";
 import { PaymentMethodRegistry } from "./services/PaymentMethodRegistry";
 import { PrismaPaymentMethodRepository } from "../infrastructure/repositories/PrismaPaymentMethodRepository";
 import { PrismaProviderMetricsRepository } from "../infrastructure/repositories/PrismaProviderMetricsRepository";
