@@ -10,6 +10,30 @@ describe("PaymentOrder", () => {
     expect(vo.createdAt).toBeInstanceOf(Date);
   });
 
+  it("should throw error when amount is zero", () => {
+    expect(() => {
+      new PaymentOrder("uuid", 0, "description", "AR", new Date());
+    }).toThrow("Amount must be greater than zero");
+  });
+
+  it("should throw error when amount is negative", () => {
+    expect(() => {
+      new PaymentOrder("uuid", -100, "description", "AR", new Date());
+    }).toThrow("Amount must be greater than zero");
+  });
+
+  it("should throw error when country code is invalid", () => {
+    expect(() => {
+      new PaymentOrder("uuid", 100, "description", "ARG", new Date());
+    }).toThrow("Country code must be a valid ISO 3166-1 alpha-2 code");
+  });
+
+  it("should throw error when country code is lowercase", () => {
+    expect(() => {
+      new PaymentOrder("uuid", 100, "description", "ar", new Date());
+    }).toThrow("Country code must be a valid ISO 3166-1 alpha-2 code");
+  });
+
   it("should create a new payment order with default status", () => {
     const order = new PaymentOrder("123", 100, "Test order", "AR", new Date());
 

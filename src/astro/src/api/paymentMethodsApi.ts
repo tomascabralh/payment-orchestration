@@ -1,16 +1,16 @@
+import { ApiClient } from "./client";
+
 export interface PaymentMethod {
   code: string;
   name: string;
 }
 
+const api = new ApiClient();
+
 export const fetchPaymentMethods = async (
   countryCode: string
 ): Promise<PaymentMethod[]> => {
-  const response = await fetch(
+  return api.get<PaymentMethod[]>(
     `/api/payment_methods?country_code=${countryCode}`
   );
-  if (!response.ok) {
-    throw new Error("Failed to fetch payment methods");
-  }
-  return response.json();
 };

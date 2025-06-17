@@ -13,7 +13,7 @@ describe("PaymentOrderForm", () => {
       target: { value: "Test description" },
     });
     fireEvent.change(screen.getByTestId("country-select"), {
-      target: { value: "CL" },
+      target: { value: "AR" },
     });
 
     fireEvent.submit(screen.getByTestId("order-form"));
@@ -21,7 +21,7 @@ describe("PaymentOrderForm", () => {
     expect(handleSubmit).toHaveBeenCalledWith({
       amount: 123,
       description: "Test description",
-      country_iso_code: "CL",
+      country_iso_code: "AR",
     });
   });
 });

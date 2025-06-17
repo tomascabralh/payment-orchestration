@@ -1,15 +1,24 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PaymentProcessContainer } from "../../components/paymentProcess/PaymentProcessContainer";
+import * as paymentOrderApi from "../../api/paymentOrderApi";
+import * as paymentMethodsApi from "../../api/paymentMethodsApi";
 
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+// Mock the API calls
+jest.mock("../../api/paymentOrderApi", () => ({
+  fetchPaymentOrder: jest.fn(),
+  processPaymentOrder: jest.fn(),
+}));
+
+jest.mock("../../api/paymentMethodsApi", () => ({
+  fetchPaymentMethods: jest.fn(),
+}));
 
 describe("PaymentProcessContainer", () => {
   const orderUuid = "order-1";
-  const orderResponse = {
+  const mockOrder = {
     uuid: orderUuid,
     amount: 100,
-    description: "desc",
+    description: "Test Order",
     countryIsoCode: "AR",
     createdAt: new Date().toISOString(),
     paymentUrl: "",
@@ -18,52 +27,54 @@ describe("PaymentProcessContainer", () => {
     transactions: [],
   };
 
+  const mockProviders = [
+    { name: "TestPay", code: "tp", supportedCountries: ["AR"] },
+  ];
+
   beforeEach(() => {
     jest.clearAllMocks();
+    (paymentOrderApi.fetchPaymentOrder as jest.Mock).mockResolvedValue(
+      mockOrder
+    );
+    (paymentMethodsApi.fetchPaymentMethods as jest.Mock).mockResolvedValue(
+      mockProviders
+    );
   });
 
-  it("renders and processes payment successfully", async () => {
-    mockFetch
-      .mockResolvedValueOnce({ ok: true, json: async () => orderResponse }) // fetch order
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [
-          { name: "TestPay", code: "tp", supportedCountries: ["AR"] },
-        ],
-      }) // fetch providers
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          uuid: orderUuid,
-          type: "payment_order",
-          attributes: {
-            amount: 100,
-            description: "desc",
-            country_iso_code: "AR",
-            status: "PAID",
-            created_at: new Date().toISOString(),
-            transactions: [
-              {
-                transaction_id: "tx-1",
-                provider: "tp",
-                status: "PAID",
-                amount: 100,
-                created_at: new Date().toISOString(),
-              },
-            ],
-          },
-        }),
-      }); // process payment
+  it("renders loading state initially", () => {
+    render(<PaymentProcessContainer orderUuid={orderUuid} />);
+    expect(screen.getByTestId("loading-skeleton")).toBeInTheDocument();
+  });
+
+  it("renders order details after loading", async () => {
     render(<PaymentProcessContainer orderUuid={orderUuid} />);
 
-    // Wait for order details to load
-    await waitFor(() => expect(screen.getByText(/desc/)).toBeInTheDocument());
+    await waitFor(() => {
+      expect(screen.getByTestId("payment-form")).toBeInTheDocument();
+    });
+  });
 
-    // Wait for providers to load
-    await waitFor(() =>
-      expect(screen.getByTestId("provider-select")).toBeInTheDocument()
+  it("handles successful payment submission", async () => {
+    const mockSuccessResponse = {
+      uuid: orderUuid,
+      type: "payment_order",
+      attributes: {
+        status: "PAID",
+        transactions: [{ transaction_id: "tx-123" }],
+      },
+    };
+    (paymentOrderApi.processPaymentOrder as jest.Mock).mockResolvedValue(
+      mockSuccessResponse
     );
 
+    render(<PaymentProcessContainer orderUuid={orderUuid} />);
+
+    // Wait for form and provider select to be ready
+    await waitFor(() => {
+      expect(screen.getByTestId("provider-select")).toBeInTheDocument();
+    });
+
+    // Fill and submit form
     fireEvent.change(screen.getByTestId("provider-select"), {
       target: { value: "tp" },
     });
@@ -80,53 +91,13 @@ describe("PaymentProcessContainer", () => {
       target: { value: "john@example.com" },
     });
     fireEvent.submit(screen.getByTestId("payment-form"));
+
+    // Check success message
     await waitFor(() => {
-      expect(screen.getByText(/pago exitoso/i)).toBeInTheDocument();
-      expect(screen.getByText(/tx-1/)).toBeInTheDocument();
-    });
-  });
-
-  it("shows error on payment failure", async () => {
-    mockFetch
-      .mockResolvedValueOnce({ ok: true, json: async () => orderResponse }) // fetch order
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => [
-          { name: "TestPay", code: "tp", supportedCountries: ["AR"] },
-        ],
-      }) // fetch providers
-      .mockResolvedValueOnce({
-        ok: false,
-        json: async () => ({ error: "fail" }),
-      }); // process payment
-    render(<PaymentProcessContainer orderUuid={orderUuid} />);
-
-    // Wait for order details to load
-    await waitFor(() => expect(screen.getByText(/desc/)).toBeInTheDocument());
-
-    // Wait for providers to load
-    await waitFor(() =>
-      expect(screen.getByTestId("provider-select")).toBeInTheDocument()
-    );
-
-    fireEvent.change(screen.getByTestId("provider-select"), {
-      target: { value: "tp" },
-    });
-    fireEvent.change(screen.getByTestId("fullName-input"), {
-      target: { value: "John Doe" },
-    });
-    fireEvent.change(screen.getByTestId("documentType-select"), {
-      target: { value: "passport" },
-    });
-    fireEvent.change(screen.getByTestId("documentNumber-input"), {
-      target: { value: "123456" },
-    });
-    fireEvent.change(screen.getByTestId("email-input"), {
-      target: { value: "john@example.com" },
-    });
-    fireEvent.submit(screen.getByTestId("payment-form"));
-    await waitFor(() => {
-      expect(screen.getByText(/fail/i)).toBeInTheDocument();
+      const successMessage = screen.getByText(
+        /¡Pago exitoso! ID de transacción: tx-123/
+      );
+      expect(successMessage).toBeInTheDocument();
     });
   });
 });

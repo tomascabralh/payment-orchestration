@@ -87,7 +87,7 @@ export const PaymentProcessContainer: React.FC<
   if (!order) {
     return (
       <div className="max-w-md mx-auto p-6">
-        <div className="animate-pulse">
+        <div className="animate-pulse" data-testid="loading-skeleton">
           <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-1/2"></div>
         </div>

@@ -64,7 +64,6 @@ export const PaymentOrderForm: React.FC<PaymentOrderFormProps> = ({
           data-testid="country-select"
         >
           <option value="AR">Argentina</option>
-          <option value="CL">Chile</option>
           <option value="US">Estados Unidos</option>
         </select>
       </div>

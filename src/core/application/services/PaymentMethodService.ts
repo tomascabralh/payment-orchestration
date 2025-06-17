@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { PaymentMethodVO } from "../../domain/PaymentMethodVO";
 import { CountryVO } from "../../domain/CountryVO";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../infrastructure/database/prisma";
 
 export class PaymentMethodService {
   private providers: Map<string, PaymentMethodVO> = new Map();

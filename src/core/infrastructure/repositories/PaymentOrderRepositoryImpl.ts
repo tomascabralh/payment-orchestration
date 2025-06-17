@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import {
   PaymentOrder,
   PaymentStatus,
   PaymentTransaction,
 } from "../../domain/PaymentOrder";
 import { PaymentOrderRepository } from "../../domain/PaymentOrderRepository";
-
-const prisma = new PrismaClient();
+import { prisma } from "../database/prisma";
 
 export class PaymentOrderRepositoryImpl implements PaymentOrderRepository {
   async findById(uuid: string): Promise<PaymentOrder | null> {

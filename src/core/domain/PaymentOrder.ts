@@ -29,6 +29,17 @@ export class PaymentOrder {
     status?: PaymentStatus,
     transactions?: PaymentTransaction[]
   ) {
+    if (amount <= 0) {
+      throw new Error("Amount must be greater than zero");
+    }
+
+    const countryCodeRegex = /^[A-Z]{2}$/;
+    if (!countryCodeRegex.test(countryIsoCode)) {
+      throw new Error(
+        "Country code must be a valid ISO 3166-1 alpha-2 code (e.g., US, AR)"
+      );
+    }
+
     this.status = status || PaymentStatus.PENDING;
     this.transactions = transactions || [];
   }

@@ -1,32 +1,38 @@
 import type { PaymentOrderFormData } from "../types/paymentsOrder";
 import type { PaymentOrder } from "../../../core/domain/PaymentOrder";
+import { ApiClient } from "./client";
+
+const api = new ApiClient();
+
+interface PaymentOrderResponse {
+  uuid: string;
+  type: "payment_order";
+  attributes: {
+    amount: number;
+    description: string;
+    country_iso_code: string;
+    status: "PAID" | "PENDING" | "FAILED";
+    created_at: string;
+    transactions: Array<{
+      transaction_id: string;
+      provider: string;
+      status: string;
+      amount: number;
+      created_at: string;
+    }>;
+  };
+  error?: string;
+}
 
 export async function createPaymentOrder(data: PaymentOrderFormData) {
-  const response = await fetch(`/api/payment_order/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) {
-    throw new Error("Error creating payment");
-  }
-  return response.json();
+  return api.post<PaymentOrder>("/api/payment_order/", data);
 }
 
 export async function fetchPaymentOrder(uuid: string): Promise<PaymentOrder> {
-  const response = await fetch(`/api/payment_order/${uuid}`);
-  if (!response.ok) {
-    throw new Error("Error fetching order");
-  }
-  const data = await response.json();
+  const data = await api.get<PaymentOrder>(`/api/payment_order/${uuid}`);
   return {
-    uuid: data.uuid,
-    amount: data.amount,
-    description: data.description,
-    countryIsoCode: data.countryIsoCode,
+    ...data,
     createdAt: new Date(data.createdAt),
-    status: data.status,
-    transactions: data.transactions,
     process: (
       provider: string,
       transactionId: string,
@@ -43,15 +49,11 @@ export async function processPaymentOrder(
   transactionId: string,
   outcome: "success" | "failure",
   redirectUrl?: string
-) {
-  const response = await fetch(`/api/payment_order/${uuid}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ providerCode, transactionId, outcome }),
+): Promise<PaymentOrderResponse> {
+  return api.post(`/api/payment_order/${uuid}`, {
+    providerCode,
+    transactionId,
+    outcome,
+    redirectUrl,
   });
-  const result = await response.json();
-  if (!response.ok) {
-    throw new Error(result.error || "Error al procesar el pago");
-  }
-  return result;
 }

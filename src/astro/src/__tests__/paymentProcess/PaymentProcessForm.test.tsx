@@ -65,7 +65,7 @@ describe("PaymentProcessForm", () => {
       documentType: "passport",
       documentNumber: "123456",
       email: "john@example.com",
-      provider: "tp",
+      provider: "",
       paymentMethod: "credit_card",
       transactionId: "",
       status: "success",

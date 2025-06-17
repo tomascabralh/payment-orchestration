@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { PaymentMethodVO } from "../../domain/PaymentMethodVO";
 import { CountryVO } from "../../domain/CountryVO";
+import { prisma } from "../database/prisma";
 
 export class PrismaPaymentMethodRepository {
-  constructor(private prisma: PrismaClient = new PrismaClient()) {}
-
   async listByCountry(country: CountryVO): Promise<PaymentMethodVO[]> {
-    const methods = await this.prisma.paymentMethod.findMany({
+    const methods = await prisma.paymentMethod.findMany({
       where: {
         isActive: true,
         supportedCountries: {
@@ -26,7 +24,7 @@ export class PrismaPaymentMethodRepository {
 
   async seedPaymentMethods(methods: PaymentMethodVO[]): Promise<void> {
     for (const method of methods) {
-      await this.prisma.paymentMethod.upsert({
+      await prisma.paymentMethod.upsert({
         where: { code: method.code },
         create: {
           code: method.code,

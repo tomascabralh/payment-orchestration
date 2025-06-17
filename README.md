@@ -2,16 +2,65 @@
 
 A payment orchestration system that manages payment processing across multiple providers, handling fallbacks and metrics tracking.
 
+## Overview
+
+The Payment Orchestration System is a robust solution designed to streamline and optimize payment processing for businesses. It acts as a central hub that intelligently routes payment requests to multiple payment providers, ensuring high availability and optimal success rates.
+
 ## Setup
 
+### Prerequisites
+
+- Node.js (v18 or higher)
+- Docker and Docker Compose
+- PostgreSQL (if running without Docker)
+- Git
+
+### Environment Setup
+
 1. Clone the repository
-2. Run the application using Docker Compose:
+2. Create a `.env` file in the root directory with the following variables:
+   ```
+   POSTGRES_USER=your_db_user
+   POSTGRES_PASSWORD=your_db_password
+   POSTGRES_DB=payment_orchestration
+   DATABASE_URL=postgresql://your_db_user:your_db_password@localhost:5432/payment_orchestration
+   ```
 
-```bash
-docker compose -f docker-compose.dev.yml up --build
-```
+### Running with Docker (Recommended)
 
-The application will be available at `http://localhost:4321`
+1. Build and start the containers:
+   ```bash
+   docker compose -f docker-compose.dev.yml up --build
+   ```
+   The application will be available at `http://localhost:4321`
+
+### Running without Docker
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   cd src/astro && npm install
+   ```
+
+2. Set up the database:
+
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev
+   npx prisma db seed
+   ```
+
+3. Start the application:
+   ```bash
+   cd src/astro && npm run dev
+   ```
+
+### Troubleshooting
+
+- If you encounter database connection issues, ensure PostgreSQL is running and the credentials in `.env` are correct
+- For Docker-related issues, ensure Docker and Docker Compose are properly installed and running
+- If you see module not found errors, try running `npm install` in both the root directory and `src/astro`
 
 ## Running Tests
 
@@ -27,23 +76,32 @@ npm test
 
 The system follows a clean architecture approach with the following layers:
 
-### Core Domain
+### Core Domain (`src/core/domain/`)
 
-- `PaymentOrder`: Represents a payment order with its status and transactions
+- `PaymentOrder`: Core entity representing a payment order with its status and transactions
 - `PaymentMethodVO`: Value object for payment methods/providers
-- `PaymentStatus`: Enum for payment statuses (PENDING, PAID, FAILED)
+- `PaymentOrderRepository`: Interface defining payment order persistence operations
+- `CountryVO`: Value object for country-specific payment method configurations
 
-### Application Layer
+### Application Layer (`src/core/application/`)
 
-- `ProcessPaymentOrderUseCase`: Main use case for processing payments
-- `PaymentMethodRegistry`: Service for managing available payment methods
-- `PaymentMetricsService`: Service for tracking provider performance
+- `ProcessPaymentOrderUseCase`: Main use case for processing payments with provider fallback logic
+- `CreatePaymentOrderUseCase`: Use case for creating new payment orders
+- `GetPaymentOrderUseCase`: Use case for retrieving payment order details
+- `ListCountryPaymentMethodsUseCase`: Use case for retrieving available payment methods by country
+- `services/`: Application services
+  - `PaymentMethodService`: Service for managing payment method operations and validations
+  - `PaymentMethodRegistry`: Service for registering and managing available payment providers
 
-### Infrastructure Layer
+### Infrastructure Layer (`src/core/infrastructure/`)
 
-- `PaymentGatewayAdapter`: Adapter for payment gateway communication
-- `PrismaPaymentMethodRepository`: Repository for payment methods
-- `PrismaProviderMetricsRepository`: Repository for provider metrics
+- `adapters/`: Directory containing payment gateway adapters
+- `repositories/`: Directory containing repository implementations
+- `database/`: Database configuration and connection management
+
+### API Layer (`src/core/api/`)
+
+- `controllers/`: API controllers handling HTTP requests and responses
 
 ### Presentation Layer (Astro)
 
@@ -57,22 +115,29 @@ The system follows a clean architecture approach with the following layers:
 
 1. Payment Processing
 
-   - Multi-provider support
+   - Multi-provider support with intelligent routing
    - Automatic fallback to next provider on failure
-   - Transaction tracking
-   - Provider metrics collection
+   - Transaction tracking and history
+   - Provider metrics collection and analysis
+   - Real-time payment status updates
+   - Support for multiple currencies
+   - Detailed transaction logging
 
 2. Payment Form
 
-   - Dynamic provider selection
-   - Customer information collection
-   - Form validation
-   - Error handling
+   - Dynamic provider selection based on success rates
+   - Customer information collection with validation
+   - Form validation with real-time feedback
+   - Comprehensive error handling and user feedback
+   - Responsive design for all devices
+   - Support for saved payment methods
 
 3. Testing
-   - Unit tests for core domain
+   - Unit tests for core domain logic
    - Integration tests for payment processing
-   - Component tests for UI
+   - Component tests for UI elements
+   - End-to-end testing scenarios
+   - Performance testing for high-load scenarios
 
 ### Not Implemented (Future Ideas)
 
@@ -109,17 +174,54 @@ The system follows a clean architecture approach with the following layers:
 ## Project Structure
 
 ```
-src/
-├── core/                 # Core domain and application logic
-│   ├── domain/          # Domain entities and value objects
-│   ├── application/     # Use cases and services
-│   └── infrastructure/  # Adapters and repositories
-├── astro/               # Frontend application
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── api/        # API endpoints
-│   │   └── __tests__/  # Frontend tests
-└── __tests__/          # Core tests
+.
+├── src/                      # Source code
+│   ├── core/                # Core domain and application logic
+│   │   ├── domain/         # Domain entities and value objects
+│   │   │   ├── PaymentOrder.ts
+│   │   │   ├── PaymentMethodVO.ts
+│   │   │   ├── PaymentOrderRepository.ts
+│   │   │   └── CountryVO.ts
+│   │   ├── application/    # Use cases and services
+│   │   │   ├── services/  # Application services
+│   │   │   │   ├── PaymentMethodService.ts
+│   │   │   │   └── PaymentMethodRegistry.ts
+│   │   │   ├── ProcessPaymentOrderUseCase.ts
+│   │   │   ├── CreatePaymentOrderUseCase.ts
+│   │   │   ├── GetPaymentOrderUseCase.ts
+│   │   │   └── ListCountryPaymentMethodsUseCase.ts
+│   │   ├── infrastructure/ # Adapters and repositories
+│   │   │   ├── adapters/  # Payment gateway adapters
+│   │   │   ├── repositories/ # Repository implementations
+│   │   │   └── database/  # Database configuration
+│   │   ├── api/           # API controllers
+│   │   │   └── controllers/
+│   │   └── __tests__/     # Core tests
+│   │
+│   ├── astro/             # Frontend application
+│   │   ├── src/
+│   │   │   ├── components/ # React components
+│   │   │   ├── layouts/   # Page layouts
+│   │   │   ├── pages/     # Astro pages
+│   │   │   ├── api/       # API endpoints
+│   │   │   ├── styles/    # CSS and styling
+│   │   │   ├── types/     # TypeScript types
+│   │   │   └── __tests__/ # Frontend tests
+│   │   ├── astro.config.mjs
+│   │   └── package.json
+│   │
+│   └── mocks/             # Mock data and services
+│
+├── prisma/                # Database schema and migrations
+│   ├── schema.prisma     # Database schema
+│   ├── seed.ts          # Database seed data
+│   └── migrations/      # Database migrations
+│
+├── docker-compose.dev.yml # Development Docker configuration
+├── package.json          # Project dependencies
+├── tsconfig.json        # TypeScript configuration
+├── jest.config.cjs      # Jest test configuration
+└── setup.sh            # Project setup script
 ```
 
 ## AI Tools Used
