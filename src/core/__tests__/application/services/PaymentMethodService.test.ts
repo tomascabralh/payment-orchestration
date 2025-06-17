@@ -1,3 +1,52 @@
+// Mock prisma client for unit tests
+jest.mock("../../../infrastructure/database/prisma", () => ({
+  prisma: {
+    paymentMethod: {
+      findMany: jest.fn().mockImplementation(({ where }) => {
+        if (where?.supportedCountries?.has === "AR") {
+          return Promise.resolve([
+            {
+              code: "akira_credits",
+              name: "Akira Credits",
+              supportedCountries: ["AR"],
+            },
+            {
+              code: "fail_bank",
+              name: "Fail Bank",
+              supportedCountries: ["AR", "US"],
+            },
+            {
+              code: "ghibli_pay",
+              name: "Ghibli Pay",
+              supportedCountries: ["AR", "US"],
+            },
+          ]);
+        }
+        if (where?.supportedCountries?.has === "US") {
+          return Promise.resolve([
+            {
+              code: "fail_bank",
+              name: "Fail Bank",
+              supportedCountries: ["AR", "US"],
+            },
+            {
+              code: "ghibli_pay",
+              name: "Ghibli Pay",
+              supportedCountries: ["AR", "US"],
+            },
+            {
+              code: "nerve_transfer",
+              name: "Nerve Transfer",
+              supportedCountries: ["US"],
+            },
+          ]);
+        }
+        return Promise.resolve([]);
+      }),
+    },
+  },
+}));
+
 import { PaymentMethodService } from "../../../application/services/PaymentMethodService";
 import { PaymentMethodVO } from "../../../domain/PaymentMethodVO";
 import { CountryVO } from "../../../domain/CountryVO";

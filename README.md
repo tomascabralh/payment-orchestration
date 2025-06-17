@@ -31,6 +31,8 @@ The Payment Orchestration System is a robust solution designed to streamline and
 1. Build and start the containers:
    ```bash
    docker compose -f docker-compose.dev.yml up --build
+   or
+   docker compose -f docker-compose.dev.yml up
    ```
    The application will be available at `http://localhost:4321`
 

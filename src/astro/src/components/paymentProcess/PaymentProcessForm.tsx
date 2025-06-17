@@ -72,7 +72,7 @@ export const PaymentProcessForm: React.FC<PaymentProcessFormProps> = ({
               data-testid="provider-select"
             >
               <option value="">Seleccione un proveedor</option>
-              {providers.map((prov: any) => (
+              {providers.map((prov: PaymentMethod) => (
                 <option
                   key={prov.code}
                   value={prov.code}

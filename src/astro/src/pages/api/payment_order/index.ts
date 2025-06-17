@@ -27,10 +27,22 @@ const controller = new PaymentOrderController(
 
 export const prerender = false;
 
+type JsonResponse = {
+  status: (code: number) => JsonResponse;
+  json: (body: unknown) => void;
+};
+
+type CreatePaymentOrderRequest = {
+  amount: number;
+  description: string;
+  country_iso_code: string;
+};
+type PaymentOrderResponse = unknown;
+
 export async function POST({ request }: { request: Request }) {
-  let body: any;
+  let body: CreatePaymentOrderRequest;
   try {
-    body = await request.json();
+    body = (await request.json()) as CreatePaymentOrderRequest;
   } catch {
     return new Response(
       JSON.stringify({ error: "Invalid or missing JSON body" }),
@@ -41,23 +53,19 @@ export async function POST({ request }: { request: Request }) {
     );
   }
   let statusCode = 201;
-  let responseBody: any = null;
-  await controller.create(
-    { body },
-    {
-      status: (code: number) => {
-        statusCode = code;
-        return {
-          json: (data: any) => {
-            responseBody = data;
-          },
-        };
-      },
-      json: (data: any) => {
-        responseBody = data;
-      },
-    }
-  );
+  let responseBody: PaymentOrderResponse = null;
+
+  const response: JsonResponse = {
+    status: (code: number) => {
+      statusCode = code;
+      return response;
+    },
+    json: (data: PaymentOrderResponse) => {
+      responseBody = data;
+    },
+  };
+
+  await controller.create({ body }, response);
   return new Response(JSON.stringify(responseBody), {
     status: statusCode,
     headers: { "Content-Type": "application/json" },

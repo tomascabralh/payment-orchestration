@@ -5,10 +5,16 @@ export interface RequestConfig extends RequestInit {
   cache?: RequestCache;
 }
 
+export interface ApiErrorData {
+  message?: string;
+  code?: string;
+  [key: string]: unknown;
+}
+
 export interface ApiError extends Error {
   status?: number;
   code?: string;
-  data?: any;
+  data?: ApiErrorData;
 }
 
 export class ApiClient {
@@ -64,16 +70,16 @@ export class ApiClient {
     message: string,
     status?: number,
     code?: string,
-    data?: any
+    data?: unknown
   ): ApiError {
     const error = new Error(message) as ApiError;
     error.status = status;
     error.code = code;
-    error.data = data;
+    error.data = data as ApiErrorData;
     return error;
   }
 
-  private async handleResponse(response: Response): Promise<any> {
+  private async handleResponse(response: Response): Promise<unknown> {
     const interceptedResponse = await this.applyResponseInterceptors(response);
 
     if (!interceptedResponse.ok) {
@@ -152,7 +158,7 @@ export class ApiClient {
         ...finalConfig,
         signal: controller.signal,
       });
-      return this.handleResponse(response);
+      return this.handleResponse(response) as T;
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         throw this.createError("Request timeout", 408, "TIMEOUT");
@@ -167,9 +173,9 @@ export class ApiClient {
     return this.request<T>(endpoint, { ...config, method: "GET" });
   }
 
-  post<T>(
+  post<T, D = unknown>(
     endpoint: string,
-    data?: any,
+    data?: D,
     config: RequestConfig = {}
   ): Promise<T> {
     return this.request<T>(endpoint, {
@@ -183,7 +189,11 @@ export class ApiClient {
     });
   }
 
-  put<T>(endpoint: string, data?: any, config: RequestConfig = {}): Promise<T> {
+  put<T, D = unknown>(
+    endpoint: string,
+    data?: D,
+    config: RequestConfig = {}
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       ...config,
       method: "PUT",

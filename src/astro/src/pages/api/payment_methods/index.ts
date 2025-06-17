@@ -10,21 +10,23 @@ const controller = new PaymentMethodsController(useCase);
 
 export const prerender = false;
 
+type PaymentMethodsResponse = unknown;
+
 export async function GET({ request }: { request: Request }) {
   const url = new URL(request.url);
   const country_code = url.searchParams.get("country_code") || "";
   let statusCode = 200;
-  let body: any = null;
+  let body: PaymentMethodsResponse = null;
   await controller.list(
     { query: { country_code } },
     {
-      json: (data: any) => {
+      json: (data: PaymentMethodsResponse) => {
         body = data;
       },
       status: (code: number) => {
         statusCode = code;
         return {
-          json: (data: any) => {
+          json: (data: PaymentMethodsResponse) => {
             body = data;
           },
         };

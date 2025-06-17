@@ -26,26 +26,28 @@ const controller = new PaymentOrderController(
 
 export const prerender = false;
 
+type JsonResponse = {
+  status: (code: number) => JsonResponse;
+  json: (body: unknown) => void;
+};
+
 export async function GET({ params }: { params: { slug: string } }) {
   const uuid = params.slug;
   let statusCode = 200;
-  let responseBody: any = null;
-  await controller.get(
-    { params: { uuid } },
-    {
-      status: (code: number) => {
-        statusCode = code;
-        return {
-          json: (data: any) => {
-            responseBody = data;
-          },
-        };
-      },
-      json: (data: any) => {
-        responseBody = data;
-      },
-    }
-  );
+  let responseBody: unknown = null;
+
+  const response: JsonResponse = {
+    status: (code: number) => {
+      statusCode = code;
+      return response;
+    },
+    json: (data: unknown) => {
+      responseBody = data;
+    },
+  };
+
+  await controller.get({ params: { uuid } }, response);
+
   return new Response(JSON.stringify(responseBody), {
     status: statusCode,
     headers: { "Content-Type": "application/json" },
@@ -61,30 +63,28 @@ export async function POST({
 }) {
   const uuid = params.slug;
   let statusCode = 200;
-  let responseBody: any = null;
+  let responseBody: unknown = null;
 
   const body = await request.json();
   const provider_id = body.providerCode;
   const redirect_url = body.redirectUrl;
+
+  const response: JsonResponse = {
+    status: (code: number) => {
+      statusCode = code;
+      return response;
+    },
+    json: (data: unknown) => {
+      responseBody = data;
+    },
+  };
 
   await controller.process(
     {
       params: { uuid },
       body: { provider_id, redirect_url },
     },
-    {
-      status: (code: number) => {
-        statusCode = code;
-        return {
-          json: (data: any) => {
-            responseBody = data;
-          },
-        };
-      },
-      json: (data: any) => {
-        responseBody = data;
-      },
-    }
+    response
   );
 
   return new Response(JSON.stringify(responseBody), {
