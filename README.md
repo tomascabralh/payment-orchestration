@@ -138,8 +138,6 @@ The system follows a clean architecture approach with the following layers:
    - Unit tests for core domain logic
    - Integration tests for payment processing
    - Component tests for UI elements
-   - End-to-end testing scenarios
-   - Performance testing for high-load scenarios
 
 ### Not Implemented (Future Ideas)
 
@@ -172,6 +170,10 @@ The system follows a clean architecture approach with the following layers:
    - More payment gateway integrations
    - Cryptocurrency support
    - Local payment methods
+  
+6. Testing
+   - End-to-end testing scenarios
+   - Performance testing for high-load scenarios
 
 ## Project Structure
 
